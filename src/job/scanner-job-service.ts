@@ -1,6 +1,6 @@
 import {
+  concatMap,
   merge,
-  mergeMap,
   from,
   catchError,
   takeUntil,
@@ -61,7 +61,7 @@ export class JobService {
         exhaustMap(async () => await this.processNewBlocks()),
       ),
       from(this.resyncQueue$).pipe(
-        mergeMap(startHeight => this.resync(startHeight)),
+        concatMap(startHeight => this.resync(startHeight)),
       ),
     ).pipe(
       takeUntil(this.stop$),
@@ -165,6 +165,8 @@ export class JobService {
 
   private processTransaction(transaction: DecodedTransaction, height: number): void {
     const { inputKeyImages, keyImages } = transaction;
+    // console.log(inputKeyImages);
+    // console.log(keyImages, 'keyimages');
 
     keyImages.forEach(({ keyImage, amount }) => {
       this.keyImageService.addKeyImage(keyImage, amount, height);
