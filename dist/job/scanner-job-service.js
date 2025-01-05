@@ -32,7 +32,7 @@ class JobService {
         }
         this.stop$ = new rxjs_1.Subject();
         this.isRunning = true;
-        (0, rxjs_1.merge)((0, rxjs_1.interval)(this.pollingInterval).pipe((0, rxjs_1.exhaustMap)(async () => await this.processNewBlocks())), (0, rxjs_1.from)(this.resyncQueue$).pipe((0, rxjs_1.mergeMap)(startHeight => this.resync(startHeight)))).pipe((0, rxjs_1.takeUntil)(this.stop$), (0, rxjs_1.catchError)(error => {
+        (0, rxjs_1.merge)((0, rxjs_1.interval)(this.pollingInterval).pipe((0, rxjs_1.exhaustMap)(async () => await this.processNewBlocks())), (0, rxjs_1.from)(this.resyncQueue$).pipe((0, rxjs_1.concatMap)(startHeight => this.resync(startHeight)))).pipe((0, rxjs_1.takeUntil)(this.stop$), (0, rxjs_1.catchError)(error => {
             console.error('Caught error:', error.message);
             return (0, rxjs_1.interval)(this.pollingInterval);
         })).subscribe({

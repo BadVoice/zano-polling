@@ -124,6 +124,14 @@ class NodeInvokeService {
                     continue;
                 }
                 const decryptedAmount = this.decodeVout(vout, validPubKey, index, addressKeys, transactionUtils);
+                if (decryptedAmount === false) {
+                    resultTransactions.push({
+                        txHash: txResponse?.tx_info?.id,
+                        keyImages: [],
+                        status: this.checkTxStatus(txResponse.tx_info.keeper_block, currentHeight),
+                        inputKeyImages,
+                    });
+                }
                 if (decryptedAmount) {
                     const amount = (0, functions_1.satoshiToZano)(decryptedAmount.toString());
                     const keyImage = this.secSpendKey ? transactionUtils.generateKeyImage(validPubKey, this.secViewKey, addressKeys.spendPublicKey, index, this.secSpendKey) : null;
@@ -150,7 +158,7 @@ class NodeInvokeService {
         if (stealthAddress !== vout.tx_out_zarcanum.stealth_address ||
             concealingPoint !== vout.tx_out_zarcanum.concealing_point ||
             blindedAssetId !== vout.tx_out_zarcanum.blinded_asset_id) {
-            return null;
+            return false;
         }
         const decryptedAmount = transactionUtils.decodeAmount(this.secViewKey, validPubKey, vout.tx_out_zarcanum.encrypted_amount, index);
         if (!decryptedAmount || typeof decryptedAmount !== 'bigint') {
