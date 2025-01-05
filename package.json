@@ -1,6 +1,6 @@
 {
   "name": "@badvoice/zano-polling",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "repository": "git@github.com:BadVoice/zano-polling.git",
   "author": "BadVoice <https://t.me/GermanSmurov>",
   "main": "dist/index.js",
