@@ -1,18 +1,39 @@
 import { Observable } from 'rxjs';
 
+
 import { JobService } from './scanner-job-service';
+import { BalanceService } from '../balance/balance-service';
+import { IBalanceService } from '../balance/types';
+import { NodeInvokeService } from '../node-invoke/node-invoke.service';
+import { TransactionProcessorService } from '../transaction-processor/transaction-processor.service'
+import transportConfig from '../transport/config/transport.config';
+import { TransportService } from '../transport/transport-service';
+import { TransportConfig } from '../transport/types';
 
 export class JobController {
   private job: JobService;
   private isRunning = false;
+  private readonly config: TransportConfig;
+
+  private readonly transportService: TransportService;
+  private readonly nodeInvokeService: NodeInvokeService;
+  private readonly balanceService: IBalanceService;
+  private readonly transactionProcessorService: TransactionProcessorService;
 
   constructor(
-    private url: string,
+    private baseUrl: string,
     private accountAddress: string,
     private secretViewKey: string,
     private secretSpendKey?: string,
     private startHeight?: number,
   ) {
+    this.config = transportConfig;
+    this.transportService = new TransportService(this.baseUrl, this.config);
+    this.nodeInvokeService =
+      new NodeInvokeService(this.transportService, this.accountAddress, this.secretViewKey, this.secretSpendKey);
+    this.balanceService = new BalanceService();
+    this.transactionProcessorService =
+      new TransactionProcessorService(this.startHeight, this.balanceService, this.nodeInvokeService);
   }
 
   async startJob(): Promise<void> {
@@ -21,7 +42,10 @@ export class JobController {
     }
 
     if (!this.job) {
-      this.job = new JobService(this.url, this.accountAddress, this.secretViewKey, this.secretSpendKey, this.startHeight);
+      this.job = new JobService(
+        this.transactionProcessorService,
+        this.balanceService,
+      );
     }
 
     this.isRunning = true;

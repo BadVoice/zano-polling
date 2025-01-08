@@ -1,10 +1,15 @@
 import { Big } from 'big.js';
-import { Observable, BehaviorSubject } from 'rxjs';
+import {
+  distinctUntilChanged,
+  Observable,
+  BehaviorSubject,
+} from 'rxjs';
 
-import { KeyImageInfo } from './types';
+import { IBalanceService } from './types';
+import { KeyImageInfo } from '../job/types';
 
 
-export class KeyImageService {
+export class BalanceService implements IBalanceService {
   private keyImagesWithHeights: Map<string, KeyImageInfo> = new Map();
   private balanceSubject: BehaviorSubject<string> = new BehaviorSubject<string>('0');
 
@@ -30,7 +35,7 @@ export class KeyImageService {
   }
 
   getBalanceObservable(): Observable<string> {
-    return this.balanceSubject.asObservable();
+    return this.balanceSubject.asObservable().pipe(distinctUntilChanged());
   }
 
   getKeyImageHeights(): Map<string, { amount: string; height: number }> {

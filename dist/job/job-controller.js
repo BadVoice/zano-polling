@@ -1,22 +1,37 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JobController = void 0;
+const key_image_service_1 = require("./key-image-service");
 const scanner_job_service_1 = require("./scanner-job-service");
+const node_invoke_service_1 = require("../node-invoke/node-invoke.service");
+const transaction_processor_service_1 = require("../transaction-processor/transaction-processor.service");
+const transport_config_1 = __importDefault(require("../transport/config/transport.config"));
+const transport_service_1 = require("../transport/transport-service");
 class JobController {
-    constructor(url, accountAddress, secretViewKey, secretSpendKey, startHeight) {
-        this.url = url;
+    constructor(baseUrl, accountAddress, secretViewKey, secretSpendKey, startHeight) {
+        this.baseUrl = baseUrl;
         this.accountAddress = accountAddress;
         this.secretViewKey = secretViewKey;
         this.secretSpendKey = secretSpendKey;
         this.startHeight = startHeight;
         this.isRunning = false;
+        this.config = transport_config_1.default;
+        this.transportService = new transport_service_1.TransportService(this.baseUrl, this.config);
+        this.nodeInvokeService =
+            new node_invoke_service_1.NodeInvokeService(this.transportService, this.accountAddress, this.secretViewKey, this.secretSpendKey);
+        this.keyImageService = new key_image_service_1.KeyImageService();
+        this.transactionProcessorService =
+            new transaction_processor_service_1.TransactionProcessorService(this.startHeight, this.keyImageService, this.nodeInvokeService);
     }
     async startJob() {
         if (this.isRunning) {
             throw new Error('Job already started');
         }
         if (!this.job) {
-            this.job = new scanner_job_service_1.JobService(this.url, this.accountAddress, this.secretViewKey, this.secretSpendKey, this.startHeight);
+            this.job = new scanner_job_service_1.JobService(this.transactionProcessorService, this.keyImageService);
         }
         this.isRunning = true;
         try {
