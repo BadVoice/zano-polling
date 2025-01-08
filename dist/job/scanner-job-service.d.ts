@@ -1,15 +1,15 @@
 import { Observable } from 'rxjs';
 import { JobController } from './job-controller';
-import { KeyImageService } from './key-image-service';
-import { ITransactionProcessorService } from '../transaction-processor/transaction-processor.service';
+import { IBalanceService } from '../balance/types';
+import { ITransactionProcessorService } from '../transaction-processor/types';
 export declare class JobService {
     private transactionProcessorService;
-    private keyImageService;
+    private balanceService;
     private isRunning;
     private pollingInterval;
     private stop$;
     private resyncQueue$;
-    constructor(transactionProcessorService: ITransactionProcessorService, keyImageService: KeyImageService);
+    constructor(transactionProcessorService: ITransactionProcessorService, balanceService: IBalanceService);
     private startJobInternal;
     startJob(controller: JobController): Promise<void>;
     resyncJob(startHeight: number, controller: JobController): Promise<void>;

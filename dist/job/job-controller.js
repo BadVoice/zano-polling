@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JobController = void 0;
-const key_image_service_1 = require("./key-image-service");
 const scanner_job_service_1 = require("./scanner-job-service");
+const balance_service_1 = require("../balance/balance-service");
 const node_invoke_service_1 = require("../node-invoke/node-invoke.service");
 const transaction_processor_service_1 = require("../transaction-processor/transaction-processor.service");
 const transport_config_1 = __importDefault(require("../transport/config/transport.config"));
@@ -22,16 +22,16 @@ class JobController {
         this.transportService = new transport_service_1.TransportService(this.baseUrl, this.config);
         this.nodeInvokeService =
             new node_invoke_service_1.NodeInvokeService(this.transportService, this.accountAddress, this.secretViewKey, this.secretSpendKey);
-        this.keyImageService = new key_image_service_1.KeyImageService();
+        this.balanceService = new balance_service_1.BalanceService();
         this.transactionProcessorService =
-            new transaction_processor_service_1.TransactionProcessorService(this.startHeight, this.keyImageService, this.nodeInvokeService);
+            new transaction_processor_service_1.TransactionProcessorService(this.startHeight, this.balanceService, this.nodeInvokeService);
     }
     async startJob() {
         if (this.isRunning) {
             throw new Error('Job already started');
         }
         if (!this.job) {
-            this.job = new scanner_job_service_1.JobService(this.transactionProcessorService, this.keyImageService);
+            this.job = new scanner_job_service_1.JobService(this.transactionProcessorService, this.balanceService);
         }
         this.isRunning = true;
         try {

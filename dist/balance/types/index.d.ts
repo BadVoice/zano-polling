@@ -1,7 +1,5 @@
 import { Observable } from 'rxjs';
-export declare class KeyImageService {
-    private keyImagesWithHeights;
-    private balanceSubject;
+export interface IBalanceService {
     addKeyImage(keyImage: string, amount: string, height: number): void;
     removeKeyImage(keyImage: string): void;
     calculateBalance(): void;

@@ -1,9 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.KeyImageService = void 0;
+exports.BalanceService = void 0;
 const big_js_1 = require("big.js");
 const rxjs_1 = require("rxjs");
-class KeyImageService {
+class BalanceService {
     constructor() {
         this.keyImagesWithHeights = new Map();
         this.balanceSubject = new rxjs_1.BehaviorSubject('0');
@@ -25,11 +25,11 @@ class KeyImageService {
         return this.keyImagesWithHeights.has(keyImage);
     }
     getBalanceObservable() {
-        return this.balanceSubject.asObservable();
+        return this.balanceSubject.asObservable().pipe((0, rxjs_1.distinctUntilChanged)());
     }
     getKeyImageHeights() {
         return new Map(this.keyImagesWithHeights);
     }
 }
-exports.KeyImageService = KeyImageService;
-//# sourceMappingURL=key-image-service.js.map
+exports.BalanceService = BalanceService;
+//# sourceMappingURL=balance-service.js.map

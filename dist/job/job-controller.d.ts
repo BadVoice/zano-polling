@@ -10,7 +10,7 @@ export declare class JobController {
     private readonly config;
     private readonly transportService;
     private readonly nodeInvokeService;
-    private readonly keyImageService;
+    private readonly balanceService;
     private readonly transactionProcessorService;
     constructor(baseUrl: string, accountAddress: string, secretViewKey: string, secretSpendKey?: string, startHeight?: number);
     startJob(): Promise<void>;
